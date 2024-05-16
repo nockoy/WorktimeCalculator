@@ -24,7 +24,7 @@
     </style>
   </head>
   <body>
-    <h1>稼働時間計算ツール ver.1</h1>
+    <h1>稼働時間計算ツール ver.2</h1>
     <textarea id="inputText" placeholder="0900-0920 朝会&#10;..."></textarea>
     <br />
     <button onclick="calculateTime()">計算する</button>
@@ -83,9 +83,13 @@
         }
 
         const { totalHours, remainingMinutes } = calculateTotalTime(inputText);
+
+        // MM形式で分を表示する
+        const formattedMinutes = remainingMinutes.toString().padStart(2, "0");
+
         document.getElementById(
           "result"
-        ).innerText = `Total time: ${totalHours}h${remainingMinutes}m`;
+        ).innerText = `Total time: ${totalHours}h${formattedMinutes}m`;
       };
 
       const resetForm = () => {
