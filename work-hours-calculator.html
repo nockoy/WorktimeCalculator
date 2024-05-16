@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Time Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 400px;
+      }
+      button {
+        margin-top: 10px;
+        margin-right: 10px;
+      }
+      #result {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>稼働時間計算ツール ver.1</h1>
+    <textarea id="inputText" placeholder="0900-0920 朝会&#10;..."></textarea>
+    <br />
+    <button onclick="calculateTime()">計算する</button>
+    <button onclick="resetForm()">リセット</button>
+    <div id="result"></div>
+
+    <script>
+      const parseTime = (time) => {
+        const hours = parseInt(time.slice(0, 2), 10);
+        const minutes = parseInt(time.slice(2, 4), 10);
+        return hours * 60 + minutes;
+      };
+
+      const calculateTotalTime = (input) => {
+        const lines = input.trim().split("\n");
+        let totalMinutes = 0;
+
+        // 時間範囲の正規表現
+        const timeRangeRegex = /^\d{4}-\d{4}/;
+
+        for (const line of lines) {
+          // 行の先頭にある時間範囲を抽出
+          const trimmedLine = line.trim();
+          const match = trimmedLine.match(timeRangeRegex);
+          if (!match) {
+            continue; // 時間範囲フォーマットに一致しない場合は無視
+          }
+
+          const timeRange = match[0];
+          const [start, end] = timeRange.split("-");
+          const startTime = parseTime(start);
+          const endTime = parseTime(end);
+
+          let duration = endTime - startTime;
+          // 翌日の時間を調整する（例えば、2420-2540）
+          if (duration < 0) {
+            duration += 24 * 60;
+          }
+
+          totalMinutes += duration;
+        }
+
+        const totalHours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        return { totalHours, remainingMinutes };
+      };
+
+      const calculateTime = () => {
+        const inputText = document.getElementById("inputText").value;
+
+        // 入力が空の場合、計算せずに終了
+        if (!inputText.trim()) {
+          document.getElementById("result").innerText = "";
+          return;
+        }
+
+        const { totalHours, remainingMinutes } = calculateTotalTime(inputText);
+        document.getElementById(
+          "result"
+        ).innerText = `Total time: ${totalHours}h${remainingMinutes}m`;
+      };
+
+      const resetForm = () => {
+        document.getElementById("inputText").value = "";
+        document.getElementById("result").innerText = "";
+      };
+    </script>
+  </body>
+</html>
