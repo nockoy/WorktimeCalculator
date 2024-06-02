@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Attendance Time Calculator</title>
+    <title>稼働時間計算ツール</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -17,19 +17,42 @@
         margin-top: 10px;
         margin-right: 10px;
       }
-      #result {
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+      .bold {
         margin-top: 20px;
         font-weight: bold;
+      }
+      .result {
+        cursor: pointer;
+      }
+      .copied {
+        color: red;
       }
     </style>
   </head>
   <body>
-    <h1>稼働時間計算ツール ver.2</h1>
-    <textarea id="inputText" placeholder="0900-0920 朝会&#10;..."></textarea>
-    <br />
-    <button onclick="calculateTime()">計算する</button>
-    <button onclick="resetForm()">リセット</button>
-    <div id="result"></div>
+    <div class="container">
+      <h1>稼働時間計算ツール ver.3</h1>
+      <textarea id="inputText1" placeholder="0900-0920 朝会&#10;..."></textarea>
+      <br />
+      <button onclick="calculateTime('inputText1', 'result1')">計算する</button>
+      <button onclick="resetForm('inputText1', 'result1')">リセット</button>
+      <div class="row">
+        <div class="bold">
+          <div>Total time:&ensp;</div>
+        </div>
+        <div class="bold">
+          <div
+            id="result1"
+            class="result"
+            onclick="copyResult('result1')"
+          ></div>
+        </div>
+      </div>
+    </div>
 
     <script>
       const parseTime = (time) => {
@@ -42,15 +65,13 @@
         const lines = input.trim().split("\n");
         let totalMinutes = 0;
 
-        // 時間範囲の正規表現
         const timeRangeRegex = /^\d{4}-\d{4}/;
 
         for (const line of lines) {
-          // 行の先頭にある時間範囲を抽出
           const trimmedLine = line.trim();
           const match = trimmedLine.match(timeRangeRegex);
           if (!match) {
-            continue; // 時間範囲フォーマットに一致しない場合は無視
+            continue;
           }
 
           const timeRange = match[0];
@@ -59,7 +80,6 @@
           const endTime = parseTime(end);
 
           let duration = endTime - startTime;
-          // 翌日の時間を調整する（例えば、2420-2540）
           if (duration < 0) {
             duration += 24 * 60;
           }
@@ -73,28 +93,48 @@
         return { totalHours, remainingMinutes };
       };
 
-      const calculateTime = () => {
-        const inputText = document.getElementById("inputText").value;
+      const calculateTime = (inputId, resultId) => {
+        const inputText = document.getElementById(inputId).value;
 
-        // 入力が空の場合、計算せずに終了
         if (!inputText.trim()) {
-          document.getElementById("result").innerText = "";
+          document.getElementById(resultId).innerText = "";
           return;
         }
 
         const { totalHours, remainingMinutes } = calculateTotalTime(inputText);
-
-        // MM形式で分を表示する
         const formattedMinutes = remainingMinutes.toString().padStart(2, "0");
 
         document.getElementById(
-          "result"
-        ).innerText = `Total time: ${totalHours}h${formattedMinutes}m`;
+          resultId
+        ).innerText = `${totalHours}h${formattedMinutes}m`;
       };
 
-      const resetForm = () => {
-        document.getElementById("inputText").value = "";
-        document.getElementById("result").innerText = "";
+      const resetForm = (inputId, resultId) => {
+        document.getElementById(inputId).value = "";
+        document.getElementById(resultId).innerText = "";
+        document.getElementById(resultId).classList.remove("copied");
+      };
+
+      const copyResult = (resultId) => {
+        const resultElement = document.getElementById(resultId);
+        const resultText = resultElement.innerText;
+        if (!resultText) {
+          alert("コピーする結果がありません。");
+          return;
+        }
+
+        const tempTextArea = document.createElement("textarea");
+        tempTextArea.value = resultText;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        tempTextArea.setSelectionRange(0, 99999); // For mobile devices
+
+        document.execCommand("copy");
+
+        document.body.removeChild(tempTextArea);
+
+        // コピーした文字の色を赤くする
+        resultElement.classList.add("copied");
       };
     </script>
   </body>
