@@ -65,7 +65,8 @@
         const lines = input.trim().split("\n");
         let totalMinutes = 0;
 
-        const timeRangeRegex = /^\d{4}-\d{4}/;
+        // 時間範囲の正規表現（行の途中にあってもマッチするように）
+        const timeRangeRegex = /(\d{4}-\d{4})/;
 
         for (const line of lines) {
           const trimmedLine = line.trim();
@@ -74,7 +75,7 @@
             continue;
           }
 
-          const timeRange = match[0];
+          const timeRange = match[1];
           const [start, end] = timeRange.split("-");
           const startTime = parseTime(start);
           const endTime = parseTime(end);
