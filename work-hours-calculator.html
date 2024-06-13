@@ -35,10 +35,9 @@
   </head>
   <body>
     <div class="container">
-      <h1>稼働時間計算ツール ver.3</h1>
+      <h1>稼働時間計算ツール ver.4</h1>
       <textarea id="inputText1" placeholder="0900-0920 朝会&#10;..."></textarea>
       <br />
-      <button onclick="calculateTime('inputText1', 'result1')">計算する</button>
       <button onclick="resetForm('inputText1', 'result1')">リセット</button>
       <div class="row">
         <div class="bold">
@@ -65,8 +64,8 @@
         const lines = input.trim().split("\n");
         let totalMinutes = 0;
 
-        // 時間範囲の正規表現（行の途中にあってもマッチするように）
-        const timeRangeRegex = /(\d{4}-\d{4})/;
+        // 時間範囲の正規表現
+        const timeRangeRegex = /^\d{4}-\d{4}/;
 
         for (const line of lines) {
           const trimmedLine = line.trim();
@@ -75,12 +74,13 @@
             continue;
           }
 
-          const timeRange = match[1];
+          const timeRange = match[0];
           const [start, end] = timeRange.split("-");
           const startTime = parseTime(start);
           const endTime = parseTime(end);
 
           let duration = endTime - startTime;
+          // 翌日の時間を調整する（例えば、2420-2540）
           if (duration < 0) {
             duration += 24 * 60;
           }
@@ -137,6 +137,10 @@
         // コピーした文字の色を赤くする
         resultElement.classList.add("copied");
       };
+
+      document.getElementById("inputText1").addEventListener("input", () => {
+        calculateTime("inputText1", "result1");
+      });
     </script>
   </body>
 </html>
