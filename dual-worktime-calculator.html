@@ -78,6 +78,19 @@
     </div>
 
     <script>
+      window.onload = () => {
+        const savedText1 = localStorage.getItem("savedInputText1");
+        const savedText2 = localStorage.getItem("savedInputText2");
+        if (savedText1) {
+          document.getElementById("inputText1").value = savedText1;
+          calculateTime("inputText1", "result1"); // テキストを復元した後、計算を実行
+        }
+        if (savedText2) {
+          document.getElementById("inputText2").value = savedText2;
+          calculateTime("inputText2", "result2");
+        }
+      };
+
       const parseTime = (time) => {
         const hours = parseInt(time.slice(0, 2), 10);
         const minutes = parseInt(time.slice(2, 4), 10);
@@ -161,10 +174,14 @@
       };
 
       document.getElementById("inputText1").addEventListener("input", () => {
+        const inputText = document.getElementById("inputText1").value;
+        localStorage.setItem("savedInputText1", inputText); // 入力内容を保存
         calculateTime("inputText1", "result1");
       });
 
       document.getElementById("inputText2").addEventListener("input", () => {
+        const inputText = document.getElementById("inputText2").value;
+        localStorage.setItem("savedInputText2", inputText); // 入力内容を保存
         calculateTime("inputText2", "result2");
       });
     </script>

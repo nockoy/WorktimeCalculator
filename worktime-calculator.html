@@ -35,7 +35,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>稼働時間計算ツール ver.4</h1>
+      <h1>稼働時間計算ツール ver.5</h1>
       <textarea id="inputText1" placeholder="0900-0920 朝会&#10;..."></textarea>
       <br />
       <button onclick="resetForm('inputText1', 'result1')">リセット</button>
@@ -54,6 +54,14 @@
     </div>
 
     <script>
+      window.onload = () => {
+        const savedText = localStorage.getItem("savedInputText");
+        if (savedText) {
+          document.getElementById("inputText1").value = savedText;
+          calculateTime("inputText1", "result1"); // テキストを復元した後、計算を実行
+        }
+      };
+
       const parseTime = (time) => {
         const hours = parseInt(time.slice(0, 2), 10);
         const minutes = parseInt(time.slice(2, 4), 10);
@@ -139,6 +147,8 @@
       };
 
       document.getElementById("inputText1").addEventListener("input", () => {
+        const inputText = document.getElementById("inputText1").value;
+        localStorage.setItem("savedInputText", inputText); // 入力内容を保存
         calculateTime("inputText1", "result1");
       });
     </script>
